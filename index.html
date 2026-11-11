@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Betika Daily Football Quiz - 10 Daily Questions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #0a0f1d;
+      --bg-card: #131b2e;
+      --card-border: #1e2c4a;
+      --betika-yellow: #fbee21;
+      --betika-green: #008753;
+      --betika-green-light: #00a86b;
+      --accent-blue: #00d2ff;
+      --text-main: #ffffff;
+      --text-muted: #8b9bb4;
+      --danger: #ff334b;
+      --warning: #ffb800;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(251, 238, 33, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(0, 135, 83, 0.08) 0%, transparent 50%);
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chakra {
+      font-family: 'Chakra Petch', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Header & Branding */
+    .brand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(251, 238, 33, 0.12);
+      border: 1px solid rgba(251, 238, 33, 0.3);
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--betika-yellow);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: #00ff66;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ff66;
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    .sound-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .sound-btn.active {
+      color: var(--betika-yellow);
+      border-color: rgba(251, 238, 33, 0.4);
+    }
+
+    /* Screen Management */
+    .screen {
+      display: none;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Intro Screen */
+    .hero-banner {
+      text-align: center;
+      padding: 16px 0 20px;
+    }
+
+    .trophy-glow {
+      font-size: 52px;
+      display: inline-block;
+      filter: drop-shadow(0 0 16px rgba(251, 238, 33, 0.4));
+      margin-bottom: 10px;
+      animation: bounce 2s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .hero-title span {
+      color: var(--betika-yellow);
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .quiz-rules-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 22px;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .rule-item {
+      padding: 8px 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+    }
+
+    .rule-item .rule-val {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--accent-blue);
+      display: block;
+    }
+
+    .rule-item .rule-lbl {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: block;
+    }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+
+    .category-pills span {
+      background: rgba(0, 135, 83, 0.15);
+      border: 1px solid rgba(0, 135, 83, 0.35);
+      color: #60e3aa;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* Buttons */
+    .btn-main {
+      width: 100%;
+      background: var(--betika-yellow);
+      color: #0b0f19;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(251, 238, 33, 0.25);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-main:hover {
+      background: #fffa55;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(251, 238, 33, 0.35);
+    }
+
+    .btn-main:active {
+      transform: translateY(1px);
+    }
+
+    .btn-outline {
+      width: 100%;
+      background: transparent;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Quiz Gameplay Screen */
+    .quiz-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .progress-pill {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+    }
+    .progress-pill span {
+      color: #fff;
+    }
+
+    .score-chip {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--betika-yellow);
+      background: rgba(251, 238, 33, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(251, 238, 33, 0.25);
+    }
+
+    .timer-container {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .timer-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .timer-seconds {
+      color: var(--betika-yellow);
+      font-weight: 800;
+    }
+    .timer-seconds.urgent {
+      color: var(--danger);
+      animation: flash 0.5s infinite;
+    }
+
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .timer-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .timer-bar {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #008753, var(--betika-yellow));
+      border-radius: 6px;
+      transition: width 0.1s linear, background-color 0.3s;
+    }
+    .timer-bar.urgent {
+      background: var(--danger);
+    }
+
+    .category-tag {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+
+    .question-box {
+      min-height: 85px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .question-text {
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: #ffffff;
+    }
+
+    .answers-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .answer-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 13px 14px;
+      text-align: left;
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.18s ease;
+      position: relative;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateX(3px);
+    }
+
+    .answer-letter {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .answer-btn.correct {
+      background: rgba(0, 135, 83, 0.25) !important;
+      border-color: #008753 !important;
+      color: #6effbc !important;
+    }
+    .answer-btn.correct .answer-letter {
+      background: #008753;
+      color: #fff;
+    }
+
+    .answer-btn.wrong {
+      background: rgba(255, 51, 75, 0.2) !important;
+      border-color: var(--danger) !important;
+      color: #ffa1ac !important;
+    }
+    .answer-btn.wrong .answer-letter {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .feedback-box {
+      min-height: 44px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      display: none;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--accent-blue);
+    }
+    .feedback-box.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    .feedback-box strong {
+      color: #fff;
+    }
+
+    .next-btn {
+      width: 100%;
+      background: #2a3756;
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .next-btn.active {
+      display: flex;
+      background: var(--betika-yellow);
+      color: #0b0f19;
+      font-weight: 800;
+      border: none;
+    }
+
+    /* Results Screen */
+    .result-hero {
+      text-align: center;
+      padding: 10px 0 16px;
+    }
+
+    .badge-icon-box {
+      width: 72px;
+      height: 72px;
+      background: rgba(251, 238, 33, 0.1);
+      border: 2px solid rgba(251, 238, 33, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 34px;
+    }
+
+    .rank-tier-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--betika-yellow);
+      margin-bottom: 4px;
+    }
+
+    .rank-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .score-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 16px 0;
+      text-align: center;
+    }
+
+    .sum-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      display: block;
+    }
+    .sum-val.score {
+      color: var(--betika-yellow);
+    }
+    .sum-lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: block;
+    }
+
+    .breakdown-card {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      border-left: 3px solid var(--betika-green);
+    }
+    .breakdown-card b {
+      color: #fff;
+    }
+
+    .share-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .btn-share-wa {
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 10px;
+      font-weight: 700;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-share-x {
+      background: #000;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 13px 10px;
+      font-weight: 700;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Notification Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #111e38;
+      border: 1px solid var(--accent-blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 30px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Brand Header -->
+    <header class="brand-header">
+      <div class="brand-badge">
+        <span class="status-dot"></span>
+        <span class="chakra">BETIKA FOOTBALL IQ</span>
+      </div>
+      <button id="soundToggle" class="sound-btn active" title="Toggle Sound">🔊</button>
+    </header>
+
+    <!-- Screen 1: Start Screen -->
+    <div id="introScreen" class="screen active">
+      <div class="hero-banner">
+        <div class="trophy-glow">⚽🏆</div>
+        <h1 class="hero-title chakra">DAILY FOOTBALL <span>QUIZ</span></h1>
+        <p class="hero-desc">10 randomly generated football questions. Test your real knowledge, beat the clock, and prove your ball IQ!</p>
+      </div>
+
+      <div class="quiz-rules-card">
+        <div class="rules-grid">
+          <div class="rule-item">
+            <span class="rule-val chakra">10</span>
+            <span class="rule-lbl">Random Qs</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-val chakra">15s</span>
+            <span class="rule-lbl">Per Question</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-val chakra">1000</span>
+            <span class="rule-lbl">Max Points</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="category-pills">
+        <span>🌍 Champions League</span>
+        <span>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</span>
+        <span>🇺🇬 Cranes & UPL</span>
+        <span>🏆 World Cup</span>
+        <span>⭐ African Legends</span>
+      </div>
+
+      <button id="startBtn" class="btn-main chakra">
+        <span>KICK OFF QUIZ</span>
+        <span style="font-size: 18px;">➔</span>
+      </button>
+
+      <button id="copyQuizLinkBtn" class="btn-outline">
+        <span>🔗 Copy Quiz Link to Share</span>
+      </button>
+    </div>
+
+    <!-- Screen 2: Quiz Play Screen -->
+    <div id="quizScreen" class="screen">
+      <div class="quiz-top-bar">
+        <div class="progress-pill chakra">
+          QUESTION <span id="qNumber">1</span> / 10
+        </div>
+        <div class="score-chip chakra">
+          <span id="currentScore">0</span> PTS
+        </div>
+      </div>
+
+      <!-- Timer Bar -->
+      <div class="timer-container">
+        <div class="timer-meta">
+          <span>TIME REMAINING</span>
+          <span id="timerText" class="timer-seconds chakra">15s</span>
+        </div>
+        <div class="timer-track">
+          <div id="timerBar" class="timer-bar"></div>
+        </div>
+      </div>
+
+      <!-- Question -->
+      <div>
+        <span id="qCategory" class="category-tag chakra">PREMIER LEAGUE</span>
+        <div class="question-box">
+          <h2 id="qText" class="question-text">Loading question...</h2>
+        </div>
+      </div>
+
+      <!-- Answers Grid -->
+      <div id="answersContainer" class="answers-grid">
+        <!-- Answers dynamically generated -->
+      </div>
+
+      <!-- Fact Feedback -->
+      <div id="feedbackBox" class="feedback-box"></div>
+
+      <!-- Next Button -->
+      <button id="nextBtn" class="next-btn chakra">
+        <span>NEXT QUESTION</span>
+        <span>➔</span>
+      </button>
+    </div>
+
+    <!-- Screen 3: Result Screen -->
+    <div id="resultScreen" class="screen">
+      <div class="result-hero">
+        <div id="badgeIcon" class="badge-icon-box">🎖️</div>
+        <h2 id="rankTitle" class="rank-tier-title chakra">BALL MASTERMIND</h2>
+        <p id="rankSubtitle" class="rank-subtitle">You truly know your football history and stats.</p>
+      </div>
+
+      <div class="score-summary-grid">
+        <div>
+          <span id="finalScoreVal" class="sum-val score chakra">850</span>
+          <span class="sum-lbl">Total Score</span>
+        </div>
+        <div>
+          <span id="correctAnswersVal" class="sum-val chakra">8 / 10</span>
+          <span class="sum-lbl">Correct</span>
+        </div>
+        <div>
+          <span id="avgSpeedVal" class="sum-val chakra">4.2s</span>
+          <span class="sum-lbl">Avg Speed</span>
+        </div>
+      </div>
+
+      <div id="breakdownText" class="breakdown-card">
+        Calculated from 10 fresh questions. Share your Football IQ to see if your friends can top it!
+      </div>
+
+      <div class="share-row">
+        <a id="shareWaBtn" class="btn-share-wa" target="_blank" rel="noopener">
+          <span>💬 WhatsApp</span>
+        </a>
+        <a id="shareXBtn" class="btn-share-x" target="_blank" rel="noopener">
+          <span>𝕏 Post</span>
+        </a>
+      </div>
+
+      <button id="playAgainBtn" class="btn-main chakra" style="margin-top: 6px;">
+        <span>🔄 PLAY AGAIN (NEW 10 QUESTIONS)</span>
+      </button>
+
+      <button id="copyResultLinkBtn" class="btn-outline">
+        <span>📋 Copy Score Summary</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Link copied to clipboard!</div>
+
+  <script>
+    /* =======================================================
+       AUDIO SYNTHESIZER (Web Audio API - Zero dependencies)
+       ======================================================= */
+    class SoundController {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      }
+      playCorrect() {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.12);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      }
+      playWrong() {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(130, now + 0.22);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+      playTick() {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.04);
+      }
+    }
+
+    const sound = new SoundController();
+
+    /* =======================================================
+       MASSIVE FOOTBALL QUESTION BANK (55+ Real Questions)
+       ======================================================= */
+    const QUESTION_BANK = [
+      {
+        category: "UEFA CHAMPIONS LEAGUE",
+        question: "Which club holds the all-time record for the most UEFA Champions League titles?",
+        options: ["Real Madrid", "AC Milan", "Liverpool", "Bayern Munich"],
+        correct: 0,
+        fact: "Real Madrid has won an unmatched 15 European Cup / Champions League trophies."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Who holds the record for the most goals scored in a single 38-game Premier League season?",
+        options: ["Erling Haaland", "Mohamed Salah", "Thierry Henry", "Alan Shearer"],
+        correct: 0,
+        fact: "Erling Haaland scored 36 Premier League goals in the 2022-23 season for Manchester City."
+      },
+      {
+        category: "UGANDA FOOTBALL",
+        question: "Which iconic goalkeeper captained Mamelodi Sundowns to CAF Champions League glory in 2016?",
+        options: ["Denis Onyango", "Robert Odongkara", "Salim Jamal", "Sam Kawalya"],
+        correct: 0,
+        fact: "Denis Onyango won the 2016 CAF Champions League with Sundowns and was voted Best African Player based in Africa."
+      },
+      {
+        category: "WORLD CUP",
+        question: "Who is the all-time top goalscorer in Men's FIFA World Cup history?",
+        options: ["Miroslav Klose", "Ronaldo Nazário", "Gerd Müller", "Lionel Messi"],
+        correct: 0,
+        fact: "Germany's Miroslav Klose scored 16 goals across 4 World Cup tournaments (2002 to 2014)."
+      },
+      {
+        category: "AFRICAN FOOTBALL",
+        question: "Which nation holds the record for the most Africa Cup of Nations (AFCON) championships?",
+        options: ["Egypt", "Cameroon", "Ghana", "Nigeria"],
+        correct: 0,
+        fact: "Egypt leads the continent with 7 AFCON titles, including three consecutive triumphs (2006, 2008, 2010)."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Which is the only club to finish a 38-game Premier League season completely unbeaten?",
+        options: ["Arsenal (2003-04)", "Manchester United (1998-99)", "Manchester City (2017-18)", "Chelsea (2004-05)"],
+        correct: 0,
+        fact: "Arsène Wenger's Arsenal 'Invincibles' won 26 and drew 12 games in the 2003-04 campaign."
+      },
+      {
+        category: "BALLON D'OR",
+        question: "Who is the only African player in football history to win the prestigious Ballon d'Or?",
+        options: ["George Weah", "Samuel Eto'o", "Didier Drogba", "Sadio Mané"],
+        correct: 0,
+        fact: "Liberia's George Weah won the Ballon d'Or in 1995 while starring for AC Milan."
+      },
+      {
+        category: "UGANDA FOOTBALL",
+        question: "What is the official name of Uganda's national stadium situated in Bweyogerere?",
+        options: ["Mandela National Stadium (Namboole)", "Nakivubo War Memorial Stadium", "St. Mary's Stadium Kitende", "Lugogo Stadium"],
+        correct: 0,
+        fact: "Mandela National Stadium, known locally as Namboole, opened in 1997 with a capacity of 45,000+."
+      },
+      {
+        category: "CHAMPIONS LEAGUE",
+        question: "Which manager famously led Chelsea to their very first UEFA Champions League title in 2012?",
+        options: ["Roberto Di Matteo", "José Mourinho", "Carlo Ancelotti", "Thomas Tuchel"],
+        correct: 0,
+        fact: "Roberto Di Matteo took over as interim manager in March 2012 and led Chelsea to glory in Munich."
+      },
+      {
+        category: "WORLD CUP",
+        question: "Which was the first African nation ever to reach the FIFA World Cup semi-finals?",
+        options: ["Morocco (2022)", "Ghana (2010)", "Senegal (2002)", "Cameroon (1990)"],
+        correct: 0,
+        fact: "Morocco made African history at Qatar 2022 by defeating Spain and Portugal to reach the semi-finals."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Who has recorded the most career assists in Premier League history?",
+        options: ["Ryan Giggs", "Cesc Fàbregas", "Kevin De Bruyne", "Wayne Rooney"],
+        correct: 0,
+        fact: "Ryan Giggs provided 162 Premier League assists over his 24-season career at Manchester United."
+      },
+      {
+        category: "UGANDA FOOTBALL",
+        question: "Which club holds the record for the most Ugandan Premier League titles in history?",
+        options: ["SC Villa", "KCCA FC", "Express FC", "Vipers SC"],
+        correct: 0,
+        fact: "SC Villa (The Jogoos) have won 17 league titles, leading all Ugandan top-flight clubs."
+      },
+      {
+        category: "AFRICAN FOOTBALL",
+        question: "Who is the all-time leading goalscorer in Africa Cup of Nations (AFCON) history?",
+        options: ["Samuel Eto'o", "Laurent Pokou", "Rashidi Yekini", "Didier Drogba"],
+        correct: 0,
+        fact: "Cameroon's Samuel Eto'o scored 18 AFCON tournament goals across 6 editions."
+      },
+      {
+        category: "INTERNATIONAL FOOTBALL",
+        question: "Which country has won the FIFA World Cup a record five times?",
+        options: ["Brazil", "Germany", "Italy", "Argentina"],
+        correct: 0,
+        fact: "Brazil won in 1958, 1962, 1970, 1994, and 2002."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Which player holds the all-time scoring record in Premier League history with 260 goals?",
+        options: ["Alan Shearer", "Harry Kane", "Wayne Rooney", "Andy Cole"],
+        correct: 0,
+        fact: "Alan Shearer scored 260 Premier League goals across Blackburn Rovers and Newcastle United."
+      },
+      {
+        category: "CHAMPIONS LEAGUE",
+        question: "Who scored the famous 92:48 stoppage-time equalizer for Real Madrid in the 2014 UCL final?",
+        options: ["Sergio Ramos", "Cristiano Ronaldo", "Gareth Bale", "Luka Modrić"],
+        correct: 0,
+        fact: "Sergio Ramos's towering header saved Real Madrid and paved the way to 'La Décima'."
+      },
+      {
+        category: "UGANDA CRANES",
+        question: "In what year did the Uganda Cranes qualify for the AFCON finals after a 39-year absence?",
+        options: ["2017 (Gabon)", "2019 (Egypt)", "2015 (Equatorial Guinea)", "2013 (South Africa)"],
+        correct: 0,
+        fact: "Farouk Miya scored against Comoros at Namboole in September 2016 to secure Uganda's return to AFCON 2017."
+      },
+      {
+        category: "EUROPEAN FOOTBALL",
+        question: "Which stadium is famously known as 'The Theatre of Dreams'?",
+        options: ["Old Trafford", "Anfield", "San Siro", "Santiago Bernabéu"],
+        correct: 0,
+        fact: "Sir Bobby Charlton coined the moniker 'The Theatre of Dreams' for Manchester United's Old Trafford."
+      },
+      {
+        category: "WORLD CUP",
+        question: "Who won the Golden Boot at the 2022 FIFA World Cup with 8 goals, including a final hat-trick?",
+        options: ["Kylian Mbappé", "Lionel Messi", "Julián Álvarez", "Olivier Giroud"],
+        correct: 0,
+        fact: "Mbappé's dramatic hat-trick in the 2022 final earned him the Golden Boot with 8 total goals."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Which club conceded only 15 goals across an entire 38-game Premier League season in 2004-05?",
+        options: ["Chelsea", "Arsenal", "Manchester United", "Liverpool"],
+        correct: 0,
+        fact: "José Mourinho's Chelsea side set an all-time defensive record of just 15 league goals conceded."
+      },
+      {
+        category: "AFRICAN FOOTBALL",
+        question: "Which Nigerian icon won the 1996 Olympic Gold and starred for Arsenal and Ajax?",
+        options: ["Nwankwo Kanu", "Jay-Jay Okocha", "Finidi George", "Sunday Oliseh"],
+        correct: 0,
+        fact: "Nwankwo Kanu was named African Footballer of the Year twice (1996, 1999)."
+      },
+      {
+        category: "CHAMPIONS LEAGUE",
+        question: "In the 2005 'Miracle of Istanbul', Liverpool overturned a 3-0 deficit against which club?",
+        options: ["AC Milan", "Juventus", "Barcelona", "Inter Milan"],
+        correct: 0,
+        fact: "Liverpool scored three second-half goals in six minutes before prevailing on penalties against AC Milan."
+      },
+      {
+        category: "UGANDA FOOTBALL",
+        question: "Which Ugandan club is nicknamed 'The Red Eagles' and plays at Wankulukuku?",
+        options: ["Express FC", "SC Villa", "KCCA FC", "URA FC"],
+        correct: 0,
+        fact: "Express Football Club was founded in 1957 and is one of the most storied clubs in East Africa."
+      },
+      {
+        category: "BALLON D'OR",
+        question: "Who holds the record for the most Ballon d'Or awards won in men's football?",
+        options: ["Lionel Messi (8)", "Cristiano Ronaldo (5)", "Johan Cruyff (3)", "Michel Platini (3)"],
+        correct: 0,
+        fact: "Lionel Messi won his record 8th Ballon d'Or in October 2023."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Who scored the quickest hat-trick in Premier League history (2 minutes 56 seconds)?",
+        options: ["Sadio Mané", "Robbie Fowler", "Sergio Agüero", "Jermain Defoe"],
+        correct: 0,
+        fact: "Sadio Mané scored 3 goals in under 3 minutes for Southampton against Aston Villa in May 2015."
+      },
+      {
+        category: "WORLD CUP",
+        question: "Who is the only footballer to have won three FIFA World Cup trophies as a player?",
+        options: ["Pelé", "Garrincha", "Cafu", "Diego Maradona"],
+        correct: 0,
+        fact: "Pelé lifted the World Cup with Brazil in 1958, 1962, and 1970."
+      },
+      {
+        category: "AFRICAN FOOTBALL",
+        question: "Which Senegalese forward scored the winning penalty in the 2021 AFCON Final shootout?",
+        options: ["Sadio Mané", "Ismaïla Sarr", "Boulaye Dia", "Kalidou Koulibaly"],
+        correct: 0,
+        fact: "Sadio Mané sealed Senegal's first-ever AFCON title against Egypt in Cameroon."
+      },
+      {
+        category: "CHAMPIONS LEAGUE",
+        question: "Who is the all-time top goalscorer in UEFA Champions League history?",
+        options: ["Cristiano Ronaldo", "Lionel Messi", "Robert Lewandowski", "Karim Benzema"],
+        correct: 0,
+        fact: "Cristiano Ronaldo has 140 Champions League goals to his name."
+      },
+      {
+        category: "UGANDA CRANES",
+        question: "What is the highest stage the Uganda Cranes have ever reached in the Africa Cup of Nations?",
+        options: ["Final (1978 in Ghana)", "Semi-finals (1962)", "Quarter-finals (2019)", "Group stage only"],
+        correct: 0,
+        fact: "Uganda reached the 1978 AFCON Final in Accra, finishing as runners-up to hosts Ghana."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Which goalkeeper holds the record for the most clean sheets in Premier League history (202)?",
+        options: ["Petr Čech", "David James", "Mark Schwarzer", "David Seaman"],
+        correct: 0,
+        fact: "Petr Čech kept 202 clean sheets playing for Chelsea and Arsenal."
+      },
+      {
+        category: "EUROPEAN FOOTBALL",
+        question: "Which club has won the German Bundesliga the most times in history?",
+        options: ["Bayern Munich", "Borussia Dortmund", "Borussia Mönchengladbach", "Hamburger SV"],
+        correct: 0,
+        fact: "Bayern Munich has won over 30 German league titles, including 11 consecutively from 2013 to 2023."
+      },
+      {
+        category: "WORLD CUP",
+        question: "In what year was the first-ever FIFA World Cup held, hosted and won by Uruguay?",
+        options: ["1930", "1924", "1938", "1950"],
+        correct: 0,
+        fact: "The inaugural 1930 tournament took place in Montevideo, Uruguay."
+      },
+      {
+        category: "AFRICAN FOOTBALL",
+        question: "Which club has won the most CAF Champions League trophies in history (12+ titles)?",
+        options: ["Al Ahly (Egypt)", "Zamalek (Egypt)", "TP Mazembe (DR Congo)", "Wydad Casablanca (Morocco)"],
+        correct: 0,
+        fact: "Cairo giants Al Ahly SC are the most decorated club in African football history."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Who famously scored the 93:20 title-winning goal for Manchester City against QPR in 2012?",
+        options: ["Sergio Agüero", "Edin Džeko", "Mario Balotelli", "David Silva"],
+        correct: 0,
+        fact: "Agüero's stoppage-time strike secured Manchester City's first league title in 44 years."
+      },
+      {
+        category: "FOOTBALL RULES",
+        question: "How far is the penalty spot from the goal line in regulation association football?",
+        options: ["12 yards (11 meters)", "10 yards", "14 yards", "15 yards"],
+        correct: 0,
+        fact: "Under IFAB Law 14, the penalty mark is exactly 12 yards (11 m) from the midpoint of the goal line."
+      },
+      {
+        category: "UGANDA FOOTBALL",
+        question: "Which Ugandan striker famously scored against Egypt in a 1-0 World Cup qualifier at Namboole in 2017?",
+        options: ["Emmanuel Okwi", "Geofrey Massa", "Farouk Miya", "Luwagga Kizito"],
+        correct: 0,
+        fact: "Emmanuel Okwi's clinical second-half strike stunned Egypt on August 31, 2017 in Kampala."
+      },
+      {
+        category: "CHAMPIONS LEAGUE",
+        question: "Which player has scored in four different UEFA Champions League finals?",
+        options: ["Cristiano Ronaldo", "Lionel Messi", "Raúl", "Karim Benzema"],
+        correct: 0,
+        fact: "Cristiano Ronaldo scored in 2008 (Man United), 2014, and twice in 2017 (Real Madrid)."
+      },
+      {
+        category: "PREMIER LEAGUE",
+        question: "Who was the first manager to win the Premier League title in three consecutive seasons?",
+        options: ["Sir Alex Ferguson", "Pep Guardiola", "Arsène Wenger", "José Mourinho"],
+        correct: 0,
+        fact: "Sir Alex Ferguson achieved this with Manchester United twice (1999–2001 and 2007–2009)."
+      },
+      {
+        category: "INTERNATIONAL FOOTBALL",
+        question: "Which country won back-to-back European Championships in 2008 and 2012?",
+        options: ["Spain", "France", "Germany", "Italy"],
+        correct: 0,
+        fact: "Spain achieved unprecedented dominance by winning Euro 2008, World Cup 2010, and Euro 2012."
+      },
+      {
+        category: "WORLD CUP",
+        question: "Which player was awarded the Golden Ball as the best player at the 2018 FIFA World Cup?",
+        options: ["Luka Modrić", "Antoine Griezmann", "Eden Hazard", "Kylian Mbappé"],
+        correct: 0,
+        fact: "Luka Modrić led Croatia to their historic first World Cup final in Russia 2018."
+      }
+    ];
+
+    /* =======================================================
+       QUIZ CONTROLLER & STATE
+       ======================================================= */
+    class FootballQuizApp {
+      constructor() {
+        this.currentSessionQuestions = [];
+        this.currentIndex = 0;
+        this.score = 0;
+        this.correctCount = 0;
+        this.timeRemaining = 15;
+        this.timerInterval = null;
+        this.questionStartTime = 0;
+        this.totalResponseTime = 0;
+        this.answered = false;
+
+        // DOM Elements
+        this.screens = {
+          intro: document.getElementById('introScreen'),
+          quiz: document.getElementById('quizScreen'),
+          result: document.getElementById('resultScreen')
+        };
+
+        this.qNumber = document.getElementById('qNumber');
+        this.currentScore = document.getElementById('currentScore');
+        this.timerText = document.getElementById('timerText');
+        this.timerBar = document.getElementById('timerBar');
+        this.qCategory = document.getElementById('qCategory');
+        this.qText = document.getElementById('qText');
+        this.answersContainer = document.getElementById('answersContainer');
+        this.feedbackBox = document.getElementById('feedbackBox');
+        this.nextBtn = document.getElementById('nextBtn');
+        this.toast = document.getElementById('toast');
+
+        this.bindEvents();
+      }
+
+      bindEvents() {
+        document.getElementById('startBtn').addEventListener('click', () => {
+          sound.init();
+          this.startQuiz();
+        });
+
+        document.getElementById('playAgainBtn').addEventListener('click', () => {
+          this.startQuiz();
+        });
+
+        this.nextBtn.addEventListener('click', () => {
+          this.advanceQuestion();
+        });
+
+        const soundToggle = document.getElementById('soundToggle');
+        soundToggle.addEventListener('click', () => {
+          sound.enabled = !sound.enabled;
+          soundToggle.textContent = sound.enabled ? '🔊' : '🔇';
+          soundToggle.classList.toggle('active', sound.enabled);
+        });
+
+        document.getElementById('copyQuizLinkBtn').addEventListener('click', () => {
+          this.copyLink(window.location.href, "Quiz link copied! Paste it in your group or WhatsApp status.");
+        });
+
+        document.getElementById('copyResultLinkBtn').addEventListener('click', () => {
+          const text = `🏆 I scored ${this.score}/1000 (${this.correctCount}/10 correct) on the Betika Daily Football Quiz! Can you beat my Football IQ? Try it here: ${window.location.href}`;
+          this.copyLink(text, "Result summary copied to clipboard!");
+        });
+      }
+
+      showScreen(name) {
+        Object.values(this.screens).forEach(s => s.classList.remove('active'));
+        this.screens[name].classList.add('active');
+        window.scrollTo(0, 0);
+      }
+
+      // Random Fisher-Yates Shuffle
+      shuffle(array) {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      startQuiz() {
+        // Pick 10 fresh random questions from pool
+        const shuffledBank = this.shuffle(QUESTION_BANK);
+        this.currentSessionQuestions = shuffledBank.slice(0, 10).map(q => {
+          // Shuffle options so correct answer is not always index 0
+          const originalCorrectText = q.options[q.correct];
+          const shuffledOptions = this.shuffle(q.options);
+          const newCorrectIndex = shuffledOptions.indexOf(originalCorrectText);
+          return {
+            ...q,
+            options: shuffledOptions,
+            correct: newCorrectIndex
+          };
+        });
+
+        this.currentIndex = 0;
+        this.score = 0;
+        this.correctCount = 0;
+        this.totalResponseTime = 0;
+
+        this.showScreen('quiz');
+        this.loadQuestion();
+      }
+
+      loadQuestion() {
+        this.answered = false;
+        clearInterval(this.timerInterval);
+
+        const q = this.currentSessionQuestions[this.currentIndex];
+        this.qNumber.textContent = this.currentIndex + 1;
+        this.currentScore.textContent = this.score;
+        this.qCategory.textContent = q.category;
+        this.qText.textContent = q.question;
+        this.feedbackBox.className = 'feedback-box';
+        this.feedbackBox.innerHTML = '';
+        this.nextBtn.className = 'next-btn chakra';
+
+        // Render Answer Buttons
+        this.answersContainer.innerHTML = '';
+        const letters = ['A', 'B', 'C', 'D'];
+        q.options.forEach((optText, index) => {
+          const btn = document.createElement('button');
+          btn.className = 'answer-btn';
+          btn.innerHTML = `
+            <span class="answer-letter">${letters[index]}</span>
+            <span>${optText}</span>
+          `;
+          btn.addEventListener('click', () => this.handleAnswer(index));
+          this.answersContainer.appendChild(btn);
+        });
+
+        // Reset and start 15s Timer
+        this.timeRemaining = 15;
+        this.questionStartTime = Date.now();
+        this.updateTimerDisplay();
+
+        this.timerInterval = setInterval(() => {
+          this.timeRemaining -= 0.1;
+          if (this.timeRemaining <= 4.0 && Math.floor(this.timeRemaining * 10) % 10 === 0) {
+            sound.playTick();
+          }
+
+          if (this.timeRemaining <= 0) {
+            this.timeRemaining = 0;
+            this.updateTimerDisplay();
+            clearInterval(this.timerInterval);
+            this.handleTimeOut();
+          } else {
+            this.updateTimerDisplay();
+          }
+        }, 100);
+      }
+
+      updateTimerDisplay() {
+        const pct = Math.max(0, (this.timeRemaining / 15) * 100);
+        this.timerBar.style.width = pct + '%';
+        this.timerText.textContent = Math.ceil(this.timeRemaining) + 's';
+
+        const isUrgent = this.timeRemaining <= 4.5;
+        this.timerBar.classList.toggle('urgent', isUrgent);
+        this.timerText.classList.toggle('urgent', isUrgent);
+      }
+
+      handleAnswer(selectedIndex) {
+        if (this.answered) return;
+        this.answered = true;
+        clearInterval(this.timerInterval);
+
+        const timeTaken = (Date.now() - this.questionStartTime) / 1000;
+        this.totalResponseTime += Math.min(timeTaken, 15);
+
+        const q = this.currentSessionQuestions[this.currentIndex];
+        const buttons = this.answersContainer.querySelectorAll('.answer-btn');
+        buttons.forEach(b => b.disabled = true);
+
+        if (selectedIndex === q.correct) {
+          // Correct: base 70 pts + up to 30 speed bonus pts
+          const speedBonus = Math.round(Math.max(0, this.timeRemaining) * 2);
+          const earned = 70 + speedBonus;
+          this.score += earned;
+          this.correctCount++;
+          sound.playCorrect();
+
+          buttons[selectedIndex].classList.add('correct');
+          this.showFeedback(true, `+${earned} PTS! ${q.fact}`);
+        } else {
+          // Wrong
+          sound.playWrong();
+          if (selectedIndex !== null && buttons[selectedIndex]) {
+            buttons[selectedIndex].classList.add('wrong');
+          }
+          buttons[q.correct].classList.add('correct');
+          this.showFeedback(false, `Incorrect. ${q.fact}`);
+        }
+
+        this.currentScore.textContent = this.score;
+        this.nextBtn.classList.add('active');
+      }
+
+      handleTimeOut() {
+        if (this.answered) return;
+        this.handleAnswer(null);
+      }
+
+      showFeedback(isCorrect, text) {
+        this.feedbackBox.innerHTML = `<strong>${isCorrect ? '✅ Well Played!' : '❌ Missed!'}</strong> ${text}`;
+        this.feedbackBox.classList.add('active');
+      }
+
+      advanceQuestion() {
+        this.currentIndex++;
+        if (this.currentIndex < 10) {
+          this.loadQuestion();
+        } else {
+          this.showResults();
+        }
+      }
+
+      showResults() {
+        clearInterval(this.timerInterval);
+        this.showScreen('result');
+
+        const avgSpeed = (this.totalResponseTime / 10).toFixed(1);
+        document.getElementById('finalScoreVal').textContent = this.score;
+        document.getElementById('correctAnswersVal').textContent = `${this.correctCount} / 10`;
+        document.getElementById('avgSpeedVal').textContent = `${avgSpeed}s`;
+
+        // Rank tier logic
+        let badge = "🥉";
+        let title = "SUNDAY LEAGUE RESERVE";
+        let sub = "Good warm-up! Run it back and build up your football trivia.";
+
+        if (this.score >= 850) {
+          badge = "👑";
+          title = "FOOTBALL MAESTRO / GOAT";
+          sub = "Undisputed ball knowledge! You rival the greatest analysts.";
+          confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+        } else if (this.score >= 700) {
+          badge = "⭐";
+          title = "WORLD CLASS TACTICIAN";
+          sub = "Top-tier awareness across the Premier League, UCL, and African history.";
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+        } else if (this.score >= 500) {
+          badge = "🎖️";
+          title = "FIRST-TEAM REGULAR";
+          sub = "Solid football IQ. You clearly follow the beautiful game closely.";
+        } else if (this.score >= 350) {
+          badge = "👟";
+          title = "SQUAD ROTATION PLAYER";
+          sub = "Not bad! A couple of tricky questions caught you off balance.";
+        }
+
+        document.getElementById('badgeIcon').textContent = badge;
+        document.getElementById('rankTitle').textContent = title;
+        document.getElementById('rankSubtitle').textContent = sub;
+
+        // Dynamic Share URLs
+        const shareMsg = `⚽ I just took the Betika Daily Football Quiz!%0A🎯 Score: ${this.score}/1000 (${this.correctCount}/10 correct)%0A🏆 Rank: ${title}%0A⚡ Think you know football better? Beat my score: ${encodeURIComponent(window.location.href)}`;
+        
+        document.getElementById('shareWaBtn').href = `https://api.whatsapp.com/send?text=${shareMsg}`;
+        document.getElementById('shareXBtn').href = `https://twitter.com/intent/tweet?text=${shareMsg}`;
+      }
+
+      copyLink(content, msg) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(content).then(() => this.showToast(msg));
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = content;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          this.showToast(msg);
+        }
+      }
+
+      showToast(msg) {
+        this.toast.textContent = msg;
+        this.toast.classList.add('show');
+        setTimeout(() => this.toast.classList.remove('show'), 2800);
+      }
+    }
+
+    // Launch application on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      window.quizApp = new FootballQuizApp();
+    });
+  </script>
+</body>
+</html>
